@@ -20,7 +20,7 @@ try:
 
     from os import environ
 
-    import FileStorage
+    from .FileStorage.Storage import Storage
 except ImportError, e:
     raise e
 
@@ -134,23 +134,26 @@ def print_xml():
 
         guid = config['XML_GET_PARAM_guid']
 
+        JasperServer = config['JasperServer']
+
         if (PS.save_xml(guid, fileObject)):
             try:
                 payload = dict(_flowId="viewReportFlow",
                                reportUnit=config['reportUnit'],
                                output=config['output'],
                                reportLocale="UTF-8",
-                               j_username=config['JasperServer']['username'],
-                               j_password=config["JasperServer"]["password"],
+                               j_username=JasperServer['username'],
+                               j_password=JasperServer["password"],
                                XML_GET_PARAM_guid=guid,
                                XML_URL=XML_URL)
-                auth = requests.auth.HTTPBasicAuth(
-                    'jasperadmin', 'jasperadmin')
-                r = requests.get(
-                    url='http://%s:%s/jasperserver/flow.html' %
-                    (config['JasperServer']['hostname'],
-                     config['JasperServer']['port']),
-                    auth=auth, params=payload)
+                logger.debug(payload)
+
+                user = JasperServer['username']
+                password = JasperServer['password']
+                auth = requests.auth.HTTPBasicAuth(user, password)
+                url = 'http://%(hostname)s:%(port)s/jasperserver/flow.html' % JasperServer
+                logger.debug("Url: %s" % url)
+                r = requests.get(url=url, auth=auth, params=payload)
                 if (PS.save_pdf(guid, r.content)):
                     if (config['print_type'] == 'print'):
                         result = PS.print_pdf(guid)
@@ -160,7 +163,7 @@ def print_xml():
                         database = "print_system"
                         content_type = 'application/pdf'
 
-                        fs = FileStorage.Storage(db=database)
+                        fs = Storage(db=database)
 
                         logger.debug("FS object: %s" % fs)
 
