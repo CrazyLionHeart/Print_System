@@ -18,7 +18,7 @@ try:
     from Print_System import Print_System
     from functools import update_wrapper
 
-    from File_Storage.tasks import storage_put
+    from .File_Storage.tasks import storage_put
 
     from os import environ
 except Exception, e:
