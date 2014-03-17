@@ -147,7 +147,7 @@ def print_xml():
                 auth = requests.auth.HTTPBasicAuth(
                     'jasperadmin', 'jasperadmin')
                 r = requests.get(
-                    url='http://%s:%d/jasperserver/flow.html' %
+                    url='http://%s:%s/jasperserver/flow.html' %
                     (config['JasperServer']['hostname'],
                      config['JasperServer']['port']),
                     auth=auth, params=payload)
