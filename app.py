@@ -162,6 +162,8 @@ def print_xml():
 
                         fs = FileStorage.Storage(db=database)
 
+                        logger.debug("FS object: %s" % fs)
+
                         res = fs.put(pdf, content_type, None)
 
                         return jsonify(results=res)
