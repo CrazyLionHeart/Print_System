@@ -19,13 +19,17 @@ except ImportError, e:
 
 current_env = environ.get("APPLICATION_ENV", 'development')
 
-with open('../../config/%s/config.%s.json' % (current_env, current_env)) as f:
+basePath = environ.get("basePath", './')
+
+with open('%s/config/%s/config.%s.json' %
+          (basePath, current_env, current_env)) as f:
     config = json.load(f)
 
 sentry = Sentry(dsn=config['Raven']['dsn'])
 
 
 __all__ = ['make_json_app']
+
 
 def make_json_app(import_name, **kwargs):
     """
@@ -46,7 +50,6 @@ def make_json_app(import_name, **kwargs):
 
     app = Flask(import_name, **kwargs)
     sentry.init_app(app)
-
 
     for code in default_exceptions.iterkeys():
         app.error_handler_spec[None][code] = make_json_error

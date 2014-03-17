@@ -25,8 +25,10 @@ except ImportError, e:
     raise e
 
 current_env = environ.get("APPLICATION_ENV", 'development')
+basePath = environ.get("basePath", './')
 
-with open('../../config/%s/config.%s.json' % (current_env, current_env)) as f:
+with open('%s/config/%s/config.%s.json' %
+          (basePath, current_env, current_env)) as f:
     config = json.load(f)
     dictConfig(config['loggingconfig'])
 
