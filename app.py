@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 try:
-    from JsonApp import make_json_app
+    from .JsonApp import make_json_app
     import json
 
     import logging
@@ -15,13 +15,13 @@ try:
     from flask import jsonify, request, Response, make_response
     from flask import current_app, url_for
     from datetime import timedelta
-    from Print_System import Print_System
+    from .Print_System import Print_System
     from functools import update_wrapper
 
-    from .File_Storage.tasks import storage_put
-
     from os import environ
-except Exception, e:
+
+    import FileStorage.tasks
+except ImportError, e:
     raise e
 
 current_env = environ.get("APPLICATION_ENV", 'development')
@@ -160,8 +160,9 @@ def print_xml():
                         database = "print_system"
                         content_type = 'application/pdf'
 
-                        res = storage_put.apply_async((pdf, content_type, None,
-                                                      database))
+                        args = (pdf, content_type, None, database)
+
+                        res = FileStorage.tasks.storage_put.apply_async(args)
                         while (not res.ready()):
                             retval = res.get()
                             return jsonify(results=retval, state=res.state)
@@ -224,12 +225,3 @@ def test():
             result = Print_System().getFileMeta(guid, 'xml')
 
     return jsonify(results=result)
-
-
-if __name__ == '__main__':
-    try:
-        port = int(config["Print_System"]["port"])
-        host = config['File_Storage']["hostname"]
-        app.run(host=host, port=port)
-    except KeyboardInterrupt:
-        pass
