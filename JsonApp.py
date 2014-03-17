@@ -8,13 +8,13 @@ from werkzeug.exceptions import HTTPException
 
 try:
     from raven.contrib.flask import Sentry
-except Exception, e:
+except ImportError, e:
     raise e
 
 try:
     from os import environ
     import json
-except Exception, e:
+except ImportError, e:
     raise e
 
 current_env = environ.get("APPLICATION_ENV", 'development')
