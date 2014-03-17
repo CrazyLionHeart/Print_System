@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from __future__ import absolute_import
-
 try:
     from JsonApp import make_json_app
     import json
@@ -20,7 +18,7 @@ try:
     from Print_System import Print_System
     from functools import update_wrapper
 
-    from ..File_Storage.tasks import storage_put
+    from File_Storage.tasks import storage_put
 
     from os import environ
 except Exception, e:
