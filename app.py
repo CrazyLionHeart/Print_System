@@ -20,7 +20,7 @@ try:
 
     from os import environ
 
-    import FileStorage.tasks
+    import FileStorage
 except ImportError, e:
     raise e
 
@@ -160,12 +160,11 @@ def print_xml():
                         database = "print_system"
                         content_type = 'application/pdf'
 
-                        args = (pdf, content_type, None, database)
+                        fs = FileStorage.Storage(db=database)
 
-                        res = FileStorage.tasks.storage_put.apply_async(args)
-                        while (not res.ready()):
-                            retval = res.get()
-                            return jsonify(results=retval, state=res.state)
+                        res = fs.put(pdf, content_type, None)
+
+                        return jsonify(results=res)
 
             except requests.exceptions.HTTPError as detail:
                 raise Exception(
