@@ -112,8 +112,6 @@ def print_xml():
     """Принимает файл на генерацию"""
     xmlObject = request.files.get('xml')
 
-    config = {}
-
     if xmlObject:
         fileObject = xmlObject.read()
 
