@@ -8,7 +8,7 @@ try:
     from lxml import etree
     from hashlib import md5
     import os
-except Exception as e:
+except ImportError as e:
     raise e
 
 logging.basicConfig(level=logging.DEBUG,
