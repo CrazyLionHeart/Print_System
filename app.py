@@ -183,12 +183,12 @@ def print_xml():
             raise Exception("Ошибка при подключении к ресурсу: %s" %
                             detail)
 
-    xmlObject = request.stream
+    xmlObject = request.get_data()
 
     logger.debug(xmlObject)
 
     if xmlObject:
-        fileObject = xmlObject.read()
+        fileObject = xmlObject
 
         xml = etree.fromstring(fileObject)
 
