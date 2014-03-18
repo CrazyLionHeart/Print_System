@@ -185,14 +185,13 @@ def print_xml():
             raise Exception("Ошибка при подключении к ресурсу: %s" %
                             detail)
 
-    xmlObject = request.get_data()
+    xmlObject = request.stream.read()
 
     logger.debug(xmlObject)
 
     if xmlObject:
-        fileObject = xmlObject
 
-        xml = etree.fromstring(fileObject)
+        xml = etree.fromstring(xmlObject)
 
         count_elements = etree.XPath("count(//*[local-name() = $name])")
 
@@ -216,7 +215,7 @@ def print_xml():
 
         guid = config['XML_GET_PARAM_guid']
 
-        if (PS.save_xml(guid, fileObject)):
+        if (PS.save_xml(guid, xmlObject)):
             pdf = get_pdf(config, guid, XML_URL)
 
             if (PS.save_pdf(guid, pdf)):
