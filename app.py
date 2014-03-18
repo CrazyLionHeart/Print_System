@@ -22,7 +22,8 @@ try:
 
     from .FileStorage.Storage import Storage
 
-    from StringIO import StringIO
+    from gevent import monkey; monkey.patch_all()
+
 except ImportError, e:
     raise e
 
