@@ -36,6 +36,15 @@ logger = logging.getLogger('print_system')
 
 PS = Print_System(config)
 
+JasperServer = config['JasperServer']
+
+JasperUrl = 'http://%(hostname)s:%(port)s/jasperserver/flow.html' % JasperServer
+
+
+def recursive_dict(element):
+    return element.tag, \
+        dict(map(recursive_dict, element)) or element.text
+
 
 def crossdomain(origin=None, methods=None, headers=None,
                 max_age=21600, attach_to_all=True,
@@ -110,6 +119,68 @@ def example():
 @crossdomain(origin='*')
 def print_xml():
     """Принимает файл на генерацию"""
+
+    def make_external_doc(guid, filename, database, callback=None):
+        url = 'http://%s/ajax/submitajax.php' % '192.168.1.214'
+        user = 'system'
+        password = 'system_1234'
+
+        auth = requests.auth.HTTPBasicAuth(user, password)
+        payload = dict(file_name=guid,
+                       file_hash=filename,
+                       db_name=database,
+                       ajtype='external_doc',
+                       datatype='create')
+
+        if callback is not None:
+            payload['callback'] = callback
+
+        logger.debug(payload)
+
+        try:
+            r = requests.post(url, auth=auth, params=payload)
+            return r.json()
+        except requests.exceptions.HTTPError as detail:
+            raise Exception(
+                "Не могу создать внешний документ: %s" %
+                detail)
+        except requests.exceptions.Timeout as detail:
+            raise Exception("""Таймаут при отправке запроса на создание
+                            внешнего документа: %s""" % detail)
+        except requests.exceptions.ConnectionError as detail:
+            raise Exception("Ошибка при подключении к ресурсу: %s" %
+                            detail)
+        except ValueError as detail:
+            raise Exception("Сервис вместо ответа вернул bullshit")
+
+    def get_pdf():
+        payload = dict(_flowId="viewReportFlow",
+                       reportUnit=config['reportUnit'],
+                       output=config['output'],
+                       reportLocale="UTF-8",
+                       j_username=JasperServer['username'],
+                       j_password=JasperServer["password"],
+                       XML_GET_PARAM_guid=guid,
+                       XML_URL=XML_URL)
+
+        user = JasperServer['username']
+        password = JasperServer['password']
+        auth = requests.auth.HTTPBasicAuth(user, password)
+
+        try:
+            r = requests.get(url=JasperUrl, auth=auth, params=payload)
+            return r.content
+        except requests.exceptions.HTTPError as detail:
+            raise Exception(
+                "Не могу получить сгенерированную печатную форму: %s" %
+                detail)
+        except requests.exceptions.Timeout as detail:
+            raise Exception("""Таймаут при отправке запроса в сервис генерации
+                            печатной формы: %s""" % detail)
+        except requests.exceptions.ConnectionError as detail:
+            raise Exception("Ошибка при подключении к ресурсу: %s" %
+                            detail)
+
     xmlObject = request.files.get('xml')
 
     if xmlObject:
@@ -127,6 +198,11 @@ def print_xml():
         else:
             control_data = xml.xpath('//control_data')[0]
 
+        if (count_elements(xml, name="callback") == 1.0):
+            callback = xml.xpath('//control_data/callback/text()')[0]
+        else:
+            callback = None
+
         XML_URL = config['XML_URL']
 
         for child in control_data:
@@ -134,49 +210,33 @@ def print_xml():
 
         guid = config['XML_GET_PARAM_guid']
 
-        JasperServer = config['JasperServer']
-
         if (PS.save_xml(guid, fileObject)):
-            try:
-                payload = dict(_flowId="viewReportFlow",
-                               reportUnit=config['reportUnit'],
-                               output=config['output'],
-                               reportLocale="UTF-8",
-                               j_username=JasperServer['username'],
-                               j_password=JasperServer["password"],
-                               XML_GET_PARAM_guid=guid,
-                               XML_URL=XML_URL)
-                logger.debug(payload)
+            pdf = get_pdf()
 
-                user = JasperServer['username']
-                password = JasperServer['password']
-                auth = requests.auth.HTTPBasicAuth(user, password)
-                url = 'http://%(hostname)s:%(port)s/jasperserver/flow.html' % JasperServer
-                logger.debug("Url: %s" % url)
-                r = requests.get(url=url, auth=auth, params=payload)
-                if (PS.save_pdf(guid, r.content)):
-                    if (config['print_type'] == 'print'):
-                        result = PS.print_pdf(guid)
-                        return jsonify(results=result)
-                    else:
-                        pdf = PS.get_pdf(guid)
-                        database = "print_system"
-                        content_type = 'application/pdf'
+            if (PS.save_pdf(guid, pdf)):
+                if (config['print_type'] == 'print'):
+                    result = PS.print_pdf(guid)
+                    return jsonify(results=result)
+                else:
+                    database = "print_system"
+                    content_type = 'application/pdf'
+                    _, metadata = recursive_dict(control_data)
 
-                        fs = Storage(db=database)
+                    fs = Storage(db=database)
 
-                        logger.debug("FS object: %s" % fs)
+                    logger.debug("FS object: %s" % fs)
 
-                        res = fs.put(pdf, content_type, None)
+                    res = fs.put(pdf, content_type, json.dumps(metadata))
 
-                        return jsonify(results=res)
+                    external_doc = make_external_doc(guid, res['filename'],
+                                                     database, callback)
 
-            except requests.exceptions.HTTPError as detail:
-                raise Exception(
-                    "Не могу получить сгенерированную печатную форму: %s" %
-                    detail)
+                    return jsonify(results=external_doc)
+            else:
+                raise Exception("""Не могу сохранить сгенерированную
+                                печатную форму""")
         else:
-            raise Exception("Не удалось сохранить файл в хранилище.")
+            raise Exception("Не удалось сохранить XML")
     else:
         raise Exception("No data in xml param")
 
