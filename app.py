@@ -185,15 +185,15 @@ def print_xml():
             raise Exception("Ошибка при подключении к ресурсу: %s" %
                             detail)
 
-    xmlObject = request.get_data(as_text=True)
+    xmlObject = request.stream
 
     logger.debug(xmlObject)
 
     if xmlObject:
-        fileObject = xmlObject
+        fileObject = xmlObject.read()
 
         parser = etree.XMLParser(recover=True, encoding='utf-8')
-        xml = etree.parse(StringIO(fileObject), parser)
+        xml = etree.parse(fileObject, parser)
 
         count_elements = etree.XPath("count(//*[local-name() = $name])")
 
