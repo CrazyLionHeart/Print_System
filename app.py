@@ -271,8 +271,6 @@ def get_jrxml():
     print_data = etree.tostring(
         xml.xpath('//print_data')[0], encoding='utf-8', pretty_print=True)
 
-    logger.debug(print_data)
-
     return Response(print_data, direct_passthrough=True,
                     mimetype='application/xml')
 
