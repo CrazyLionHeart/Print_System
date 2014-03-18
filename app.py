@@ -153,7 +153,7 @@ def print_xml():
         except ValueError as detail:
             raise Exception("Сервис вместо ответа вернул bullshit")
 
-    def get_pdf():
+    def get_pdf(config, guid, XML_URL):
         payload = dict(_flowId="viewReportFlow",
                        reportUnit=config['reportUnit'],
                        output=config['output'],
@@ -211,7 +211,7 @@ def print_xml():
         guid = config['XML_GET_PARAM_guid']
 
         if (PS.save_xml(guid, fileObject)):
-            pdf = get_pdf()
+            pdf = get_pdf(config, guid, XML_URL)
 
             if (PS.save_pdf(guid, pdf)):
                 if (config['print_type'] == 'print'):
