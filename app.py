@@ -167,6 +167,8 @@ def print_xml():
         password = JasperServer['password']
         auth = requests.auth.HTTPBasicAuth(user, password)
 
+        logger.debug(payload)
+
         try:
             r = requests.get(url=JasperUrl, auth=auth, params=payload)
             return r.content
