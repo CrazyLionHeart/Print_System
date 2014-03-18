@@ -181,7 +181,7 @@ def print_xml():
             raise Exception("Ошибка при подключении к ресурсу: %s" %
                             detail)
 
-    xmlObject = request.files.get('xml')
+    xmlObject = request.stream
 
     if xmlObject:
         fileObject = xmlObject.read()
