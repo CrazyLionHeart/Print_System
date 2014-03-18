@@ -21,6 +21,8 @@ try:
     from os import environ
 
     from .FileStorage.Storage import Storage
+
+    from StringIO import StringIO
 except ImportError, e:
     raise e
 
@@ -190,7 +192,7 @@ def print_xml():
     if xmlObject:
         fileObject = xmlObject
 
-        xml = etree.fromstring(fileObject)
+        xml = etree.fromstring(StringIO(fileObject))
 
         count_elements = etree.XPath("count(//*[local-name() = $name])")
 
