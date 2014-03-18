@@ -192,7 +192,7 @@ def print_xml():
     if xmlObject:
         fileObject = xmlObject
 
-        xml = etree.fromstring(StringIO(fileObject))
+        xml = etree.parse(StringIO(fileObject))
 
         count_elements = etree.XPath("count(//*[local-name() = $name])")
 
