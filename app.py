@@ -185,6 +185,8 @@ def print_xml():
 
     xmlObject = request.stream
 
+    logger.debug(xmlObject)
+
     if xmlObject:
         fileObject = xmlObject.read()
 
