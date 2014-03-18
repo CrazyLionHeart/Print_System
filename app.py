@@ -262,12 +262,18 @@ def get_preview():
 @crossdomain(origin='*')
 def get_jrxml():
     guid = request.args.get('guid')
-    if guid:
-        xml = Print_System().get_xml(guid)
-        print_data = etree.tostring(
-            xml.xpath('//print_data')[0], encoding='utf-8', pretty_print=True)
-        return Response(print_data, direct_passthrough=True,
-                        mimetype='application/xml')
+    if guid is None:
+        raise Exception("No guid in request")
+
+    xml = Print_System().get_xml(guid)
+
+    print_data = etree.tostring(
+        xml.xpath('//print_data')[0], encoding='utf-8', pretty_print=True)
+
+    logger.debug(print_data)
+
+    return Response(print_data, direct_passthrough=True,
+                    mimetype='application/xml')
 
 
 @app.route('/test', methods=['POST'])
