@@ -183,7 +183,7 @@ def print_xml():
             raise Exception("Ошибка при подключении к ресурсу: %s" %
                             detail)
 
-    xmlObject = request.get_data()
+    xmlObject = request.get_data(as_text=True)
 
     logger.debug(xmlObject)
 
