@@ -27,7 +27,7 @@ with open('%s/config/%s/config.%s.json' %
 
 dsn = format("http://%s:%s@%s", config['Raven']['public'],
              config['Raven']['private'], config['Raven']['host'])
-sentry = Sentry(dsn=config['Raven']['dsn'])
+sentry = Sentry(dsn=dsn)
 
 
 __all__ = ['make_json_app']
