@@ -25,8 +25,8 @@ with open('%s/config/%s/config.%s.json' %
           (basePath, current_env, current_env)) as f:
     config = json.load(f)
 
-dsn = format("http://%s:%s@%s", config['Raven']['public'],
-             config['Raven']['private'], config['Raven']['host'])
+dsn = "http://%s:%s@%s" % (config['Raven']['public'],
+                           config['Raven']['private'], config['Raven']['host'])
 sentry = Sentry(dsn=dsn)
 
 
