@@ -22,7 +22,8 @@ try:
 
     from .FileStorage.Storage import Storage
 
-    from gevent import monkey; monkey.patch_all()
+    from gevent import monkey
+    monkey.patch_all()
 
 except ImportError, e:
     raise e
@@ -129,7 +130,32 @@ def print_xml():
         password = 'system_1234'
 
         auth = requests.auth.HTTPBasicAuth(user, password)
-        payload = dict(file_name=guid,
+
+        filtersMain = dict(groupOp="AND", rules=[dict(field="doc_pin",
+                           data=guid, op="eq")]
+                           )
+
+        payload = dict(ajtype='jqGrid', datatype='docs_list',
+                       filtersMain=json.dumps(filtersMain))
+
+        try:
+            r = requests.post(url, auth=auth, params=payload)
+            headers = r.json()
+            doc_name = headers[0]['name']
+        except requests.exceptions.HTTPError as detail:
+            raise Exception(
+                "Не могу получить свойства родительского документа: %s" %
+                detail)
+        except requests.exceptions.Timeout as detail:
+            raise Exception("""Таймаут при отправке запроса на получение
+                            свойств родительского документа: %s""" % detail)
+        except requests.exceptions.ConnectionError as detail:
+            raise Exception("Ошибка при подключении к ресурсу: %s" %
+                            detail)
+        except ValueError as detail:
+            raise Exception("Сервис вместо ответа вернул bullshit")
+
+        payload = dict(file_name=doc_name,
                        file_hash=filename,
                        db_name=database,
                        ajtype='external_doc',
