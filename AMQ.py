@@ -7,37 +7,29 @@ except Exception as e:
     raise e
 
 import json
-import sys
 from itertools import count
 
 try:
     import logging
-    from logging.config import dictConfig
-    from loggingconfig import LOGGING, SENTRY_DSN
 except Exception as e:
     raise e
 
-try:
-    from raven.handlers.logging import SentryHandler
-except Exception as e:
-    raise e
-
-dictConfig(LOGGING)
-
-logger = logging.getLogger()
+logging.basicConfig(level=logging.DEBUG,
+                    format=u'''%(filename)s[LINE:%(lineno)d]# %(levelname)-8s
+                    [%(asctime)s]  %(message)s''')
 
 
 class AMQ:
 
     def __init__(self):
-        logger.debug("Создаем объект AMQ")
+        logging.debug("Создаем объект AMQ")
 
     def consumer(self, queue, num=1, callback=None):
 
         stomp = StompClient("localhost", 61613)
         stomp.connect()
 
-        logger.debug("Начинаем забирать сообщение из очереди %s" % queue)
+        logging.debug("Начинаем забирать сообщение из очереди %s" % queue)
 
         headers = {
             # client-individual mode is necessary for concurrent processing
@@ -53,21 +45,21 @@ class AMQ:
         try:
             for i in xrange(0, num) if num else count():
                 if callback:
-                    logger.debug("Забираем сообщение и передаем калбеку")
-                    stomp.get(callback=callback_func)
+                    logging.debug("Забираем сообщение и передаем калбеку")
+                    stomp.get(callback=callback)
                 else:
                     frame = stomp.get()
-                    logger.debug(frame.headers.get("message-id"))
-                    logger.debug(frame.body)
+                    logging.debug(frame.headers.get("message-id"))
+                    logging.debug(frame.body)
                     stomp.ack(frame)
                     return frame.body
         except Empty as e:
-            logger.error(e)
+            logging.error(e)
         finally:
-            logger.debug(
+            logging.debug(
                 "Заканчиваем забирать сообщение и отписываемся от очереди")
             stomp.unsubscribe(queue)
-            logger.debug("Закрываем подключение к очереди")
+            logging.debug("Закрываем подключение к очереди")
             stomp.disconnect()
 
     def producer(self, queue, message=None, conf={}):
@@ -75,11 +67,11 @@ class AMQ:
         stomp = StompClient("localhost", 61613)
         stomp.connect()
 
-        logger.debug("Кладем сообщение в %s: %s" % (queue, message))
+        logging.debug("Кладем сообщение в %s: %s" % (queue, message))
 
         this_frame = stomp.put(
             item=message, destination=queue, persistent=True, conf=conf)
-        logger.debug("Receipt: %s" % this_frame.headers.get("receipt-id"))
+        logging.debug("Receipt: %s" % this_frame.headers.get("receipt-id"))
         stomp.disconnect()
 
     def Send_Notify(self, func_name="toastr.success", func_args=[], recipient=["*"], profile="user", tag="", callbackArgs=None, errbackArgs=None):

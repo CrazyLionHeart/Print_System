@@ -30,13 +30,14 @@ except ImportError, e:
 
 current_env = environ.get("APPLICATION_ENV", 'development')
 basePath = environ.get("basePath", './')
+logging.basicConfig(level=logging.DEBUG,
+                    format=u'''%(filename)s[LINE:%(lineno)d]# %(levelname)-8s
+                    [%(asctime)s]  %(message)s''')
 
 with open('%s/config/%s/config.%s.json' %
           (basePath, current_env, current_env)) as f:
     config = json.load(f)
-    dictConfig(config['loggingconfig'])
 
-logger = logging.getLogger('print_system')
 
 PS = Print_System(config)
 
@@ -164,7 +165,7 @@ def print_xml():
         if callback is not None:
             payload['callback'] = callback
 
-        logger.debug(payload)
+        logging.debug(payload)
 
         try:
             r = requests.post(url, auth=auth, params=payload)
@@ -196,7 +197,7 @@ def print_xml():
         password = JasperServer['password']
         auth = requests.auth.HTTPBasicAuth(user, password)
 
-        logger.debug(payload)
+        logging.debug(payload)
 
         try:
             r = requests.get(url=JasperUrl, auth=auth, params=payload)
@@ -214,7 +215,7 @@ def print_xml():
 
     xmlObject = request.stream.read()
 
-    logger.debug(xmlObject)
+    logging.debug(xmlObject)
 
     if xmlObject:
 
@@ -256,7 +257,7 @@ def print_xml():
 
                     fs = Storage(db=database)
 
-                    logger.debug("FS object: %s" % fs)
+                    logging.debug("FS object: %s" % fs)
 
                     res = fs.put(pdf, content_type, json.dumps(metadata))
 
@@ -312,13 +313,13 @@ def test():
         control_data = xml.xpath('//control_data')[0]
         config = {}
 
-        logger.debug(config)
+        logging.debug(config)
 
         for child in control_data:
-            logger.debug(child)
+            logging.debug(child)
             config[child.tag] = child.text
 
-        logger.debug(config)
+        logging.debug(config)
 
         guid = xml.xpath('//control_data/XML_GET_PARAM_guid/text()')[0]
         if (Print_System().save_xml(guid, fileObject)):
