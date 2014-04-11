@@ -6,7 +6,6 @@ try:
     import json
 
     import logging
-    from logging.config import dictConfig
 
     from lxml import etree
 
@@ -183,35 +182,50 @@ def print_xml():
         except ValueError as detail:
             raise Exception("Сервис вместо ответа вернул bullshit")
 
-    def get_pdf(config, guid, XML_URL):
-        payload = dict(_flowId="viewReportFlow",
-                       reportUnit=config['reportUnit'],
-                       output=config['output'],
-                       reportLocale="UTF-8",
-                       j_username=JasperServer['username'],
-                       j_password=JasperServer["password"],
-                       XML_GET_PARAM_guid=guid,
-                       XML_URL=XML_URL)
+    def get_pdf(senviceName, config, guid, XML_URL):
 
-        user = JasperServer['username']
-        password = JasperServer['password']
-        auth = requests.auth.HTTPBasicAuth(user, password)
+        if serviceName == 'jasper':
+            payload = dict(_flowId="viewReportFlow",
+                           reportUnit=config['reportUnit'],
+                           output=config['output'],
+                           reportLocale="UTF-8",
+                           j_username=JasperServer['username'],
+                           j_password=JasperServer["password"],
+                           XML_GET_PARAM_guid=guid,
+                           XML_URL=XML_URL)
 
-        logging.debug(payload)
+            user = JasperServer['username']
+            password = JasperServer['password']
+            auth = requests.auth.HTTPBasicAuth(user, password)
 
-        try:
-            r = requests.get(url=JasperUrl, auth=auth, params=payload)
-            return r.content
-        except requests.exceptions.HTTPError as detail:
-            raise Exception(
-                "Не могу получить сгенерированную печатную форму: %s" %
-                detail)
-        except requests.exceptions.Timeout as detail:
-            raise Exception("""Таймаут при отправке запроса в сервис генерации
-                            печатной формы: %s""" % detail)
-        except requests.exceptions.ConnectionError as detail:
-            raise Exception("Ошибка при подключении к ресурсу: %s" %
-                            detail)
+            logging.debug(payload)
+
+            try:
+                r = requests.get(url=JasperUrl, auth=auth, params=payload)
+                return r.content
+            except requests.exceptions.HTTPError as detail:
+                raise Exception("""Не могу получить сгенерированную печатную
+                                форму: %s""" % detail)
+            except requests.exceptions.Timeout as detail:
+                raise Exception("""Таймаут при отправке запроса в сервис
+                                генерации печатной формы: %s""" % detail)
+            except requests.exceptions.ConnectionError as detail:
+                raise Exception("Ошибка при подключении к ресурсу: %s" %
+                                detail)
+
+        else:
+            import importlib
+
+            generator = importlib.import_module(".Generators.%s.app" %
+                                                serviceName)
+
+            xml = PS.get_xml(guid)
+
+            print_data = etree.tostring(
+                xml.xpath('//print_data')[0], encoding='utf-8',
+                pretty_print=True)
+
+            return generator.app(print_data)
 
     xmlObject = request.stream.read()
 
@@ -236,6 +250,11 @@ def print_xml():
         else:
             callback = None
 
+        if (count_elements(xml, name="serviceName") == 1.0):
+            serviceName = xml.xpath("//serviceName/text()")[0]
+        else:
+            raise Exception("Unknown serviceName")
+
         XML_URL = config['XML_URL']
 
         for child in control_data:
@@ -244,7 +263,7 @@ def print_xml():
         guid = config['XML_GET_PARAM_guid']
 
         if (PS.save_xml(guid, xmlObject)):
-            pdf = get_pdf(config, guid, XML_URL)
+            pdf = get_pdf(serviceName, config, guid, XML_URL)
 
             if (PS.save_pdf(guid, pdf)):
                 if (config['print_type'] == 'print'):
@@ -279,7 +298,7 @@ def print_xml():
 def get_preview():
     guid = request.args.get("guid")
     if guid:
-        pdf = Print_System().get_pdf(guid)
+        pdf = PS.get_pdf(guid)
         return Response(pdf, direct_passthrough=True,
                         mimetype='application/pdf')
     else:
@@ -293,7 +312,7 @@ def get_jrxml():
     if guid is None:
         raise Exception("No guid in request")
 
-    xml = Print_System().get_xml(guid)
+    xml = PS.get_xml(guid)
 
     print_data = etree.tostring(
         xml.xpath('//print_data')[0], encoding='utf-8', pretty_print=True)
@@ -322,7 +341,7 @@ def test():
         logging.debug(config)
 
         guid = xml.xpath('//control_data/XML_GET_PARAM_guid/text()')[0]
-        if (Print_System().save_xml(guid, fileObject)):
-            result = Print_System().getFileMeta(guid, 'xml')
+        if (PS.save_xml(guid, fileObject)):
+            result = PS.getFileMeta(guid, 'xml')
 
     return jsonify(results=result)
