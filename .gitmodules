@@ -3,3 +3,12 @@
 	url = ssh://192.168.1.214/home/FileStorage.git
     branch = master
     ignore = dirty
+[submodule "Generators/rlab"]
+	path = Generators/rlab
+	url = ssh://192.168.1.214/home/Rlab_Service.git
+[submodule "Generators/print_serv"]
+	path = Generators/print_serv
+	url = ssh://192.168.1.214/home/Print_Serv.git
+[submodule "Generators/filestorage"]
+	path = Generators/filestorage
+	url = ssh://192.168.1.214/home/ServiceBlankStorage.git
