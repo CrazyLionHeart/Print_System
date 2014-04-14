@@ -188,7 +188,6 @@ def print_xml():
             payload = dict(_flowId="viewReportFlow",
                            reportUnit=config['reportUnit'],
                            output=config['output'],
-                           reportLocale="UTF-8",
                            j_username=JasperServer['username'],
                            j_password=JasperServer["password"],
                            XML_GET_PARAM_guid=guid,
