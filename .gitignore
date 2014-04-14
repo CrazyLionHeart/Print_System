@@ -1,8 +1,4 @@
-logs
-logs/*
 *.pyc
-docs/html
-docs/latex
 
 # VirtualEnv folder
 .env
