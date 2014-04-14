@@ -261,13 +261,13 @@ def print_xml():
             raise Exception("Unknown serviceName")
 
         if(count_elements(xml, name="storage_file_hash") == 1.0):
-            kwargs['storage_file_hash'] = xml.xpath("//control_data/storage_file_hash/text()")
+            kwargs['storage_file_hash'] = xml.xpath("//control_data/storage_file_hash/text()")[0]
 
         if (count_elements(xml, name="storage_database") == 1.0):
-            kwargs['storage_database'] = xml.xpath("//control_data/storage_database/text()")
+            kwargs['storage_database'] = xml.xpath("//control_data/storage_database/text()")[0]
 
         if (count_elements(xml, name='printFormName') == 1.0):
-            kwargs['printFormName'] = xml.xpath("//control_data/printFormName/text()")
+            kwargs['printFormName'] = xml.xpath("//control_data/printFormName/text()")[0]
 
         XML_URL = config['XML_URL']
 
