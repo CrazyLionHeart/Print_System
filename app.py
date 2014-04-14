@@ -21,7 +21,9 @@ try:
 
     from .FileStorage.Storage import Storage
 
-    from .Generators import filestorage, print_serv, rlab
+    from .Generators.filestorage import app as filestorage
+    from .Generators.print_serv import app as print_serv
+    from .Generators.rlab import app as rlab
 
     from gevent import monkey
     monkey.patch_all()
@@ -184,7 +186,7 @@ def print_xml():
         except ValueError as detail:
             raise Exception("Сервис вместо ответа вернул bullshit")
 
-    def get_pdf(serviceName, config, guid, XML_URL):
+    def get_pdf(serviceName, config, guid, XML_URL, **kwargs):
 
         if serviceName == 'jasper':
             payload = dict(_flowId="viewReportFlow",
@@ -224,7 +226,7 @@ def print_xml():
                 xml.xpath('//print_data')[0], encoding='utf-8',
                 pretty_print=True)
 
-            return generator.app(print_data)
+            return generator.app(print_data, **kwargs)
 
     xmlObject = request.stream.read()
 
@@ -233,6 +235,8 @@ def print_xml():
     if xmlObject:
 
         xml = etree.fromstring(xmlObject)
+
+        kwargs = dict()
 
         count_elements = etree.XPath("count(//*[local-name() = $name])")
 
@@ -254,6 +258,15 @@ def print_xml():
         else:
             raise Exception("Unknown serviceName")
 
+        if(count_elements(xml, name="storage_file_hash") == 1.0):
+            kwargs['storage_file_hash'] = xml.xpath("//control_data/storage_file_hash/text()")
+
+        if (count_elements(xml, name="storage_database") == 1.0):
+            kwargs['storage_database'] = xml.xpath("//control_data/storage_database/text()")
+
+        if (count_elements(xml, name='printFormName') == 1.0):
+            kwargs['printFormName'] = xml.xpath("//control_data/printFormName/text()")
+
         XML_URL = config['XML_URL']
 
         for child in control_data:
@@ -262,7 +275,8 @@ def print_xml():
         guid = config['XML_GET_PARAM_guid']
 
         if (PS.save_xml(guid, xmlObject)):
-            pdf = get_pdf(serviceName, config, guid, XML_URL)
+            pdf = get_pdf(serviceName, config=config, guid=guid,
+                          XML_URL=XML_URL, **kwargs)
 
             if (PS.save_pdf(guid, pdf)):
                 if (config['print_type'] == 'print'):
