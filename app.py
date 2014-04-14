@@ -182,7 +182,7 @@ def print_xml():
         except ValueError as detail:
             raise Exception("Сервис вместо ответа вернул bullshit")
 
-    def get_pdf(senviceName, config, guid, XML_URL):
+    def get_pdf(serviceName, config, guid, XML_URL):
 
         if serviceName == 'jasper':
             payload = dict(_flowId="viewReportFlow",
@@ -216,7 +216,7 @@ def print_xml():
             import importlib
 
             generator = importlib.import_module(".Generators.%s.app" %
-                                                serviceName)
+                                                serviceName, '.')
 
             xml = PS.get_xml(guid)
 
