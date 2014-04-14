@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 try:
-    from .JsonApp import make_json_app
+    from JsonApp import make_json_app
     import json
 
     import logging
@@ -14,16 +14,16 @@ try:
     from flask import jsonify, request, Response, make_response
     from flask import current_app, url_for
     from datetime import timedelta
-    from .Print_System import Print_System
+    from Print_System import Print_System
     from functools import update_wrapper
 
     from os import environ
 
-    from .FileStorage.Storage import Storage
+    from FileStorage.Storage import Storage
 
-    from .Generators.filestorage import app as filestorage
-    from .Generators.print_serv import app as print_serv
-    from .Generators.rlab import app as rlab
+    from Generators.filestorage import app as filestorage
+    from Generators.print_serv import app as print_serv
+    from Generators.rlab import app as rlab
 
     from gevent import monkey
     monkey.patch_all()
