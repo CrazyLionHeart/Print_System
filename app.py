@@ -21,6 +21,8 @@ try:
 
     from .FileStorage.Storage import Storage
 
+    from .Generators import filestorage, print_serv, rlab
+
     from gevent import monkey
     monkey.patch_all()
 
@@ -213,10 +215,8 @@ def print_xml():
                                 detail)
 
         else:
-            import importlib
 
-            generator = importlib.import_module(".Generators.%s.app" %
-                                                serviceName, '.')
+            generator = globals()[serviceName]
 
             xml = PS.get_xml(guid)
 
