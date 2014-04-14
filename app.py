@@ -21,9 +21,9 @@ try:
 
     from FileStorage.Storage import Storage
 
-    from Generators import filestorage
-    from Generators import print_serv
-    from Generators import rlab
+    from Generators.filestorage import app as filestorage
+    from Generators.print_serv import app as print_serv
+    from Generators.rlab import app as rlab
 
     from gevent import monkey
     monkey.patch_all()
