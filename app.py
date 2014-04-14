@@ -226,6 +226,8 @@ def print_xml():
                 xml.xpath('//print_data')[0], encoding='utf-8',
                 pretty_print=True)
 
+            logging.debug(kwargs)
+
             return generator.app(print_data, **kwargs)
 
     xmlObject = request.stream.read()
