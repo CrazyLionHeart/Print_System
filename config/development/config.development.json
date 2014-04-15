@@ -11,7 +11,7 @@
         "worker_class": "tornado",
         "worker_connections": 2000,
         "timeout": 30,
-        "keepalive": 2,
+        "keepalive": 2
     },
     "JasperServer": {
         "hostname": "localhost",
