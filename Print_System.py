@@ -11,10 +11,6 @@ try:
 except ImportError as e:
     raise e
 
-logging.basicConfig(level=logging.DEBUG,
-                    format=u'''%(filename)s[LINE:%(lineno)d]# %(levelname)-8s
-                    [%(asctime)s]  %(message)s''')
-
 
 class Print_System(object):
 
