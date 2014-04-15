@@ -182,7 +182,7 @@ def print_xml():
     def get_pdf(serviceName, config, guid, XML_URL, **kwargs):
 
         logging.debug("serviceName: %s" % serviceName)
-        logging.debbug("config: %s" % config)
+        logging.debug("config: %s" % config)
         logging.debug("guid: %s" % guid)
         logging.debug("XML_URL: %s" % XML_URL)
         logging.debug("kwargs: %s" % kwargs)
