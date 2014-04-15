@@ -1,31 +1,17 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from __future__ import absolute_import
-from flask import Flask, jsonify
-from werkzeug.exceptions import default_exceptions
-from werkzeug.exceptions import HTTPException
-
 try:
+    from flask import Flask, jsonify
+    from werkzeug.exceptions import default_exceptions
+    from werkzeug.exceptions import HTTPException
+
     from raven.contrib.flask import Sentry
-except ImportError, e:
-    raise e
 
-try:
     from os import environ
     import json
 except ImportError, e:
     raise e
-
-current_env = environ.get("APPLICATION_ENV", 'development')
-
-with open('config/%s/config.%s.json' % (current_env, current_env)) as f:
-    config = json.load(f)
-
-dsn = "http://%s:%s@%s" % (config['Raven']['public'],
-                           config['Raven']['private'], config['Raven']['host'])
-sentry = Sentry(dsn=dsn)
-
 
 __all__ = ['make_json_app']
 
@@ -46,6 +32,17 @@ def make_json_app(import_name, **kwargs):
                                 if isinstance(ex, HTTPException)
                                 else 500)
         return response
+
+    current_env = environ.get("APPLICATION_ENV", 'development')
+
+    with open('./config/%s/config.%s.json' % (current_env, current_env)) as f:
+        config = json.load(f)
+
+    dsn = "http://%s:%s@%s" % (config['Raven']['public'],
+                               config['Raven']['private'],
+                               config['Raven']['host'])
+
+    sentry = Sentry(dsn=dsn)
 
     app = Flask(import_name, **kwargs)
     sentry.init_app(app)
