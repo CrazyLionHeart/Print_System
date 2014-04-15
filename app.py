@@ -32,15 +32,9 @@ except ImportError, e:
     raise e
 
 current_env = environ.get("APPLICATION_ENV", 'development')
-basePath = environ.get("basePath", './')
-logging.basicConfig(level=logging.DEBUG,
-                    format=u'''%(filename)s[LINE:%(lineno)d]# %(levelname)-8s
-                    [%(asctime)s]  %(message)s''')
 
-with open('%s/config/%s/config.%s.json' %
-          (basePath, current_env, current_env)) as f:
+with open('config/%s/config.%s.json' % (current_env, current_env)) as f:
     config = json.load(f)
-
 
 PS = Print_System(config)
 
@@ -345,8 +339,6 @@ def test():
         xml = etree.fromstring(fileObject)
         control_data = xml.xpath('//control_data')[0]
         config = {}
-
-        logging.debug(config)
 
         for child in control_data:
             logging.debug(child)
