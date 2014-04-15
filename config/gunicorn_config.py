@@ -6,7 +6,7 @@ import json
 
 current_env = environ.get("APPLICATION_ENV", 'development')
 
-with open('./config/%s/config.%s.json' % (current_env, current_env)) as f:
+with open('./%s/config.%s.json' % (current_env, current_env)) as f:
     own_config = json.load(f)
 
 gunicorn = own_config['gunicorn']
