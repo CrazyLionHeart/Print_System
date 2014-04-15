@@ -1,6 +1,22 @@
 {
-    "Print_System": {
+    "Raven": {
+        "public": "475ae49ccd5a4edc8df4ce80cb6135f2",
+        "private": "1107ae1c79574e0790c3afe2cf58265f",
+        "host": "sentry.bbp/2"
+    },
+    "gunicorn": {
         "hostname": "0.0.0.0",
-        "port": 9090
+        "port": 9090,
+        "workers": 8,
+        "worker_class": "tornado",
+        "worker_connections": 2000,
+        "timeout": 30,
+        "keepalive": 2,
+    },
+    "JasperServer": {
+        "hostname": "localhost",
+        "port": "8080",
+        "username": "jasperadmin",
+        "password": "jasperadmin"
     }
 }
