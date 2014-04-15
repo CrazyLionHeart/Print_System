@@ -96,7 +96,6 @@ def crossdomain(origin=None, methods=None, headers=None,
     return decorator
 
 app = make_json_app(__name__)
-# app.debug = True
 
 
 @app.route('/')
