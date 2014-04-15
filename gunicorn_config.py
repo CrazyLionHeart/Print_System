@@ -7,9 +7,9 @@ import json
 current_env = environ.get("APPLICATION_ENV", 'development')
 
 with open('./config/%s/config.%s.json' % (current_env, current_env)) as f:
-    config = json.load(f)
+    own_config = json.load(f)
 
-gunicorn = config['gunicorn']
+gunicorn = own_config['gunicorn']
 
 bind = '%s:%s' % (gunicorn["hostname"],
                   int(gunicorn["port"]))
