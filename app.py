@@ -179,12 +179,12 @@ def print_xml():
         except ValueError as detail:
             raise Exception("Сервис вместо ответа вернул bullshit")
 
-    def get_pdf(serviceName, config, guid, XML_URL, **kwargs):
+    def get_pdf(serviceName, config, guid, **kwargs):
 
         logging.debug("serviceName: %s" % serviceName)
         logging.debug("config: %s" % config)
         logging.debug("guid: %s" % guid)
-        logging.debug("XML_URL: %s" % XML_URL)
+        logging.debug("XML_URL: %s" % config['XML_URL'])
         logging.debug("kwargs: %s" % kwargs)
 
         if serviceName == 'jasper':
@@ -194,7 +194,7 @@ def print_xml():
                            j_username=JasperServer['username'],
                            j_password=JasperServer["password"],
                            XML_GET_PARAM_guid=guid,
-                           XML_URL=XML_URL)
+                           XML_URL=config['XML_URL'])
 
             user = JasperServer['username']
             password = JasperServer['password']
@@ -268,16 +268,13 @@ def print_xml():
         if (count_elements(xml, name='printFormName') == 1.0):
             kwargs['printFormName'] = xml.xpath("//control_data/printFormName/text()")[0]
 
-        XML_URL = config['XML_URL']
-
         for child in control_data:
             config[child.tag] = child.text
 
         guid = config['XML_GET_PARAM_guid']
 
         if (PS.save_xml(guid, xmlObject)):
-            pdf = get_pdf(serviceName, config=config, guid=guid,
-                          XML_URL=XML_URL, **kwargs)
+            pdf = get_pdf(serviceName, config=config, guid=guid, **kwargs)
 
             if (PS.save_pdf(guid, pdf)):
                 if (config['print_type'] == 'print'):
