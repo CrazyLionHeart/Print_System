@@ -269,7 +269,8 @@ def print_xml():
             kwargs['printFormName'] = xml.xpath("//control_data/printFormName/text()")[0]
 
         for child in control_data:
-            config[child.tag] = child.text
+            if child.tag != 'XML_URL':
+                config[child.tag] = child.text
 
         guid = config['XML_GET_PARAM_guid']
 
