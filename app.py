@@ -329,8 +329,7 @@ def get_jrxml():
     print_data = etree.tostring(
         xml.xpath('//print_data')[0], encoding='utf-8', pretty_print=True)
 
-    return Response(print_data, direct_passthrough=True,
-                    mimetype='application/xml')
+    return Response(print_data, mimetype='application/xml')
 
 
 @app.route('/test', methods=['POST'])
