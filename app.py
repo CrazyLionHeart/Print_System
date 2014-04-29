@@ -15,7 +15,7 @@ try:
     from flask import current_app, url_for
     from datetime import timedelta
     from Print_System import Print_System
-    from functools import update_wrapper
+    from functools import update_wrapper, wraps
 
     from os import environ
 
@@ -24,9 +24,6 @@ try:
     from Generators.filestorage import app as filestorage
     from Generators.print_serv import app as print_serv
     from Generators.rlab import app as rlab
-
-    from gevent import monkey
-    monkey.patch_all()
 
 except ImportError, e:
     raise e
@@ -87,6 +84,14 @@ def crossdomain(origin=None, methods=None, headers=None,
 
         f.provide_automatic_options = False
         return update_wrapper(wrapped_function, f)
+    return decorator
+
+
+def returns_xml(f):
+    @wraps(f)
+    def decorator(*args, **kwargs):
+        r = f(*args, **kwargs)
+        return Response(r, content_type='text/xml; charset=utf-8')
     return decorator
 
 app = make_json_app(__name__)
@@ -319,6 +324,7 @@ def get_preview():
 
 @app.route('/get_jrxml', methods=['GET'])
 @crossdomain(origin='*')
+@returns_xml
 def get_jrxml():
     guid = request.args.get('guid')
     if guid is None:
@@ -329,7 +335,7 @@ def get_jrxml():
     print_data = etree.tostring(
         xml.xpath('//print_data')[0], encoding='utf-8', pretty_print=True)
 
-    return Response(print_data, mimetype='application/xml')
+    return print_data
 
 
 @app.route('/test', methods=['POST'])
