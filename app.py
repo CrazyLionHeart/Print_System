@@ -95,6 +95,7 @@ def returns_xml(f):
     return decorator
 
 app = make_json_app(__name__)
+app.debug = True
 
 
 @app.route('/')
