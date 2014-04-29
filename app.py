@@ -143,6 +143,7 @@ def print_xml():
 
         try:
             r = requests.post(url, auth=auth, params=payload)
+            logging.debug("Service response: %s" % r.text)
             headers = r.json()
             doc_name = headers[0]['name']
         except requests.exceptions.HTTPError as detail:
@@ -155,7 +156,7 @@ def print_xml():
         except requests.exceptions.ConnectionError as detail:
             raise Exception("Ошибка при подключении к ресурсу: %s" %
                             detail)
-        except ValueError as detail:
+        except (ValueError, IndexError) as detail:
             raise Exception("Сервис вместо ответа вернул bullshit")
 
         payload = dict(file_name=doc_name,
