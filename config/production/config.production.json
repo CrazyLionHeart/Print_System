@@ -10,7 +10,7 @@
         "workers": 8,
         "worker_class": "tornado",
         "worker_connections": 2000,
-        "timeout": 30,
+        "timeout": 120,
         "keepalive": 2
     },
     "JasperServer": {
