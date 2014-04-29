@@ -97,6 +97,12 @@ def returns_xml(f):
 app = make_json_app(__name__)
 app.debug = True
 
+url = 'http://%s/ajax/submitajax.php' % config["obs"]
+user = 'system'
+password = 'system_1234'
+
+auth = requests.auth.HTTPBasicAuth(user, password)
+
 
 @app.route('/')
 @crossdomain(origin='*')
@@ -128,11 +134,6 @@ def print_xml():
     """Принимает файл на генерацию"""
 
     def make_external_doc(guid, filename, database, callback=None):
-        url = 'http://%s/ajax/submitajax.php' % '192.168.1.214'
-        user = 'system'
-        password = 'system_1234'
-
-        auth = requests.auth.HTTPBasicAuth(user, password)
 
         filtersMain = dict(groupOp="AND", rules=[dict(field="doc_pin",
                            data=guid, op="eq")]

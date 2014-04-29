@@ -19,5 +19,6 @@
         "username": "jasperadmin",
         "password": "jasperadmin"
     },
-    "XML_URL": "http://127.0.0.1:9090/get_jrxml"
+    "XML_URL": "http://127.0.0.1:9090/get_jrxml",
+    "obs": "192.168.1.214"
 }
