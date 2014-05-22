@@ -164,7 +164,12 @@ def print_xml():
                        file_hash=filename,
                        db_name=database,
                        ajtype='external_doc',
-                       datatype='create')
+                       datatype='create',
+                       doc_props=dict(
+                           contragent_pin=headers[0]['contragent_pin'],
+                       contragent_name=headers[0]['contragent_name'],
+                       agent_pin=headers[0]['agent_pin'],
+                       agent_name=headers[0]['agent_name']))
 
         if callback is not None:
             payload['callback'] = callback
@@ -271,10 +276,12 @@ def print_xml():
             kwargs['storage_file_hash'] = xml.xpath("//control_data/storage_file_hash/text()")[0]
 
         if (count_elements(xml, name="storage_database") == 1.0):
-            kwargs['storage_database'] = xml.xpath("//control_data/storage_database/text()")[0]
+            kwargs['storage_database'] = xml.xpath(
+                "//control_data/storage_database/text()")[0]
 
         if (count_elements(xml, name='printFormName') == 1.0):
-            kwargs['printFormName'] = xml.xpath("//control_data/printFormName/text()")[0]
+            kwargs['printFormName'] = xml.xpath(
+                "//control_data/printFormName/text()")[0]
 
         for child in control_data:
             if child.tag != 'XML_URL':
