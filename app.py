@@ -294,23 +294,22 @@ def print_xml():
 
             if (PS.save_pdf(guid, pdf)):
                 if (config['print_type'] == 'print'):
-                    result = PS.print_pdf(guid)
-                    return jsonify(results=result)
-                else:
-                    database = "print_system"
-                    content_type = 'application/pdf'
-                    _, metadata = recursive_dict(control_data)
+                    PS.print_pdf(guid)
 
-                    fs = Storage(db=database)
+                database = "print_system"
+                content_type = 'application/pdf'
+                _, metadata = recursive_dict(control_data)
 
-                    logging.debug("FS object: %s" % fs)
+                fs = Storage(db=database)
 
-                    res = fs.put(pdf, content_type, json.dumps(metadata))
+                logging.debug("FS object: %s" % fs)
 
-                    external_doc = make_external_doc(guid, res['filename'],
-                                                     database, callback)
+                res = fs.put(pdf, content_type, json.dumps(metadata))
 
-                    return jsonify(results=external_doc)
+                external_doc = make_external_doc(guid, res['filename'],
+                                                 database, callback)
+
+                return jsonify(results=external_doc)
             else:
                 raise Exception("""Не могу сохранить сгенерированную
                                 печатную форму""")
