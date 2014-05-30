@@ -169,7 +169,8 @@ def print_xml():
                            contragent_pin=headers[0]['contragent_pin'],
                        contragent_name=headers[0]['contragent_name'],
                        agent_pin=headers[0]['agent_pin'],
-                       agent_name=headers[0]['agent_name']))
+                       agent_name=headers[0]['agent_name']),
+                       parent_doc_pin=guid)
 
         if callback is not None:
             payload['callback'] = callback
