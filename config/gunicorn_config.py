@@ -19,5 +19,3 @@ worker_connections = int(gunicorn["worker_connections"])
 timeout = int(gunicorn["timeout"])
 keepalive = int(gunicorn["keepalive"])
 reload = True
-errorlog = '/var/log/gunicorn.log'
-loglevel = 'debug'
