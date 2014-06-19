@@ -307,10 +307,13 @@ def print_xml():
 
                 res = fs.put(pdf, content_type, json.dumps(metadata))
 
-                external_doc = make_external_doc(guid, res['filename'],
-                                                 database, callback)
+                if res:
+                    external_doc = make_external_doc(guid, res['filename'],
+                                                     database, callback)
 
-                return jsonify(results=external_doc)
+                    return jsonify(results=external_doc)
+                else:
+                    return jsonify(results=False)
             else:
                 raise Exception("""Не могу сохранить сгенерированную
                                 печатную форму""")
