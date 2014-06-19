@@ -20,5 +20,6 @@
         "password": "jasperadmin"
     },
     "XML_URL": "http://127.0.0.1:91/get_jrxml",
-    "obs": "192.168.1.213"
+    "obs": "192.168.1.213",
+    "count_copy": 1
 }
