@@ -241,7 +241,12 @@ def print_xml():
 
             logging.debug(kwargs)
 
-            return generator.app(print_data, **kwargs)
+            result = generator.app(print_data, **kwargs)
+
+            if result:
+                return result
+            else:
+                raise Exception("Service return no data")
 
     xmlObject = request.stream.read()
 
