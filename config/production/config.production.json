@@ -1,25 +1,25 @@
 {
-    "Raven": {
-        "public": "dd51df2d18874e98be8247fa1cd1695d",
-        "private": "2fecf4ae0910492fa02d0e2ff40a11f7",
-        "host": "sentry.bbp/3"
-    },
-    "gunicorn": {
-        "hostname": "0.0.0.0",
-        "port": 9191,
-        "workers": 8,
-        "worker_class": "tornado",
-        "worker_connections": 2000,
-        "timeout": 120,
-        "keepalive": 2
-    },
-    "JasperServer": {
-        "hostname": "localhost",
-        "port": "8080",
-        "username": "jasperadmin",
-        "password": "jasperadmin"
-    },
-    "XML_URL": "http://127.0.0.1:91/get_jrxml",
-    "obs": "192.168.1.213",
-    "count_copy": 1
+  "Raven": {
+    "public": "dd51df2d18874e98be8247fa1cd1695d",
+    "private": "2fecf4ae0910492fa02d0e2ff40a11f7",
+    "host": "sentry.bbp/3"
+  },
+  "gunicorn": {
+    "hostname": "0.0.0.0",
+    "port": 9191,
+    "workers": 8,
+    "worker_class": "tornado",
+    "worker_connections": 2000,
+    "timeout": 120,
+    "keepalive": 2
+  },
+  "JasperServer": {
+    "hostname": "localhost",
+    "port": "8080",
+    "username": "jasperadmin",
+    "password": "jasperadmin"
+  },
+  "XML_URL": "http://127.0.0.1:91/get_jrxml",
+  "obs": "obs.bbp",
+  "count_copy": 1
 }

@@ -1,25 +1,25 @@
 {
-    "Raven": {
-        "public": "475ae49ccd5a4edc8df4ce80cb6135f2",
-        "private": "1107ae1c79574e0790c3afe2cf58265f",
-        "host": "sentry.bbp/2"
-    },
-    "gunicorn": {
-        "hostname": "0.0.0.0",
-        "port": 9090,
-        "workers": 8,
-        "worker_class": "tornado",
-        "worker_connections": 2000,
-        "timeout": 30,
-        "keepalive": 2
-    },
-    "JasperServer": {
-        "hostname": "localhost",
-        "port": "8080",
-        "username": "jasperadmin",
-        "password": "jasperadmin"
-    },
-    "XML_URL": "http://127.0.0.1:90/get_jrxml",
-    "obs": "192.168.1.214",
-    "count_copy": 1
+  "Raven": {
+    "public": "475ae49ccd5a4edc8df4ce80cb6135f2",
+    "private": "1107ae1c79574e0790c3afe2cf58265f",
+    "host": "sentry.bbp/2"
+  },
+  "gunicorn": {
+    "hostname": "0.0.0.0",
+    "port": 9090,
+    "workers": 8,
+    "worker_class": "tornado",
+    "worker_connections": 2000,
+    "timeout": 30,
+    "keepalive": 2
+  },
+  "JasperServer": {
+    "hostname": "localhost",
+    "port": "8080",
+    "username": "jasperadmin",
+    "password": "jasperadmin"
+  },
+  "XML_URL": "http://127.0.0.1:90/get_jrxml",
+  "obs": "obs-test.bbp",
+  "count_copy": 1
 }
