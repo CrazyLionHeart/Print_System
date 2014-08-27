@@ -250,7 +250,7 @@ def print_xml():
 
     xmlObject = request.stream.read()
 
-    logging.debug(xmlObject)
+    logging.debug(unicode(xmlObject))
 
     if xmlObject:
 
