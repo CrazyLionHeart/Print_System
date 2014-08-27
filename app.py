@@ -250,8 +250,6 @@ def print_xml():
 
     xmlObject = request.stream.read()
 
-    logging.debug(unicode(xmlObject))
-
     if xmlObject:
 
         xml = etree.fromstring(xmlObject)
