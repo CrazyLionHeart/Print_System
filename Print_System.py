@@ -142,7 +142,13 @@ class Print(object):
         printer_name = self.config['printer']
         filename = self.config['XML_GET_PARAM_guid']
         path = os.path.join(self.config['pathName'], self.config['filename'])
+
         options = {'sides': self.config['sides']}
+
+        if self.config.get('lanscape'):
+            options['landscape'] = True
+        elif self.config.get('portrait'):
+            options['portrait'] = True
 
         result = list()
 
