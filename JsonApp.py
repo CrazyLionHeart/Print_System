@@ -42,10 +42,9 @@ def make_json_app(import_name, **kwargs):
                                config['Raven']['private'],
                                config['Raven']['host'])
 
-    sentry = Sentry(dsn=dsn)
-
     app = Flask(import_name, **kwargs)
-    sentry.init_app(app)
+    app.config['SENTRY_DSN'] = dsn
+    sentry = Sentry(app)
 
     for code in default_exceptions.iterkeys():
         app.error_handler_spec[None][code] = make_json_error

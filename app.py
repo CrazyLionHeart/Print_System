@@ -95,7 +95,6 @@ def returns_xml(f):
     return decorator
 
 app = make_json_app(__name__)
-app.debug = True
 
 url = 'http://%s/ajax/submitajax.php' % config["obs"]
 user = 'system'
