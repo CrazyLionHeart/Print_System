@@ -252,7 +252,10 @@ def print_xml():
 
     if xmlObject:
 
-        xml = etree.fromstring(xmlObject)
+        try:
+            xml = etree.fromstring(xmlObject)
+        except etree.XMLSyntaxError as e:
+            raise Exception(e)
 
         kwargs = dict()
 
