@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 try:
-    from JsonApp import make_json_app
     import json
 
     import logging
@@ -11,15 +10,17 @@ try:
 
     import requests
 
-    from flask import jsonify, request, Response, make_response
-    from flask import current_app, url_for
-    from datetime import timedelta
-    from Print_System import Print_System
-    from functools import update_wrapper, wraps
+    from raven.contrib.flask import Sentry
+    from raven.middleware import Sentry as SentryMiddleware
 
-    from os import environ
+    from flask import jsonify, request, Response
+    from flask import url_for
 
     from FileStorage.Storage import Storage
+
+    from config import config
+    from JsonApp import make_json_app, crossdomain
+    from Base_Print_System import Base_Print_System
 
     from Generators.filestorage import app as filestorage
     from Generators.print_serv import app as print_serv
@@ -28,71 +29,27 @@ try:
 except ImportError, e:
     raise e
 
-current_env = environ.get("APPLICATION_ENV", 'development')
-
-with open('config/%s/config.%s.json' % (current_env, current_env)) as f:
-    config = json.load(f)
-
-PS = Print_System(config)
+PS = Base_Print_System(config)
 
 JasperServer = config['JasperServer']
 
 JasperUrl = 'http://%(hostname)s:%(port)s/jasperserver/flow.html' % JasperServer
+
+dsn = "http://%s:%s@%s" % (config['Raven']['public'],
+                           config['Raven']['private'],
+                           config['Raven']['host'])
+
+app = make_json_app(__name__)
+app.config['SENTRY_DSN'] = dsn
+sentry = Sentry(dsn=dsn, logging=True)
+sentry.init_app(app)
+app.wsgi = SentryMiddleware(app.wsgi_app, sentry.client)
 
 
 def recursive_dict(element):
     return element.tag, \
         dict(map(recursive_dict, element)) or element.text
 
-
-def crossdomain(origin=None, methods=None, headers=None,
-                max_age=21600, attach_to_all=True,
-                automatic_options=True):
-    if methods is not None:
-        methods = ', '.join(sorted(x.upper() for x in methods))
-    if headers is not None and not isinstance(headers, basestring):
-        headers = ', '.join(x.upper() for x in headers)
-    if not isinstance(origin, basestring):
-        origin = ', '.join(origin)
-    if isinstance(max_age, timedelta):
-        max_age = max_age.total_seconds()
-
-    def get_methods():
-        if methods is not None:
-            return methods
-
-        options_resp = current_app.make_default_options_response()
-        return options_resp.headers['allow']
-
-    def decorator(f):
-        def wrapped_function(*args, **kwargs):
-            if automatic_options and request.method == 'OPTIONS':
-                resp = current_app.make_default_options_response()
-            else:
-                resp = make_response(f(*args, **kwargs))
-            if not attach_to_all and request.method != 'OPTIONS':
-                return resp
-
-            h = resp.headers
-
-            h['Access-Control-Allow-Origin'] = origin
-            h['Access-Control-Allow-Methods'] = get_methods()
-            h['Access-Control-Max-Age'] = str(max_age)
-            if headers is not None:
-                h['Access-Control-Allow-Headers'] = headers
-            return resp
-
-        f.provide_automatic_options = False
-        return update_wrapper(wrapped_function, f)
-    return decorator
-
-
-def returns_xml(f):
-    @wraps(f)
-    def decorator(*args, **kwargs):
-        r = f(*args, **kwargs)
-        return Response(r, content_type='text/xml; charset=utf-8')
-    return decorator
 
 app = make_json_app(__name__)
 
@@ -279,7 +236,8 @@ def print_xml():
             raise Exception("Unknown serviceName")
 
         if(count_elements(xml, name="storage_file_hash") == 1.0):
-            kwargs['storage_file_hash'] = xml.xpath("//control_data/storage_file_hash/text()")[0]
+            kwargs['storage_file_hash'] = xml.xpath(
+                "//control_data/storage_file_hash/text()")[0]
 
         if (count_elements(xml, name="storage_database") == 1.0):
             kwargs['storage_database'] = xml.xpath(
@@ -342,7 +300,6 @@ def get_preview():
 
 @app.route('/get_jrxml', methods=['GET'])
 @crossdomain(origin='*')
-@returns_xml
 def get_jrxml():
     guid = request.args.get('guid')
     if guid is None:
@@ -353,7 +310,8 @@ def get_jrxml():
     print_data = etree.tostring(
         xml.xpath('//print_data')[0], encoding='utf-8', pretty_print=True)
 
-    return print_data
+    return Response(print_data, direct_passthrough=True,
+                    mimetype='text/xml', content_type='text/xml; charset=utf-8')
 
 
 @app.route('/test', methods=['POST'])

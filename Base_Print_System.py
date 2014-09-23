@@ -11,8 +11,10 @@ try:
 except ImportError as e:
     raise e
 
+logger = logging.getLogger(__name__)
 
-class Print_System(object):
+
+class Base_Print_System(object):
 
     def __init__(self, config=None):
         if config:

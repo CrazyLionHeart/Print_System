@@ -1,23 +1,51 @@
 {
   "Raven": {
-    "public": "dd51df2d18874e98be8247fa1cd1695d",
-    "private": "2fecf4ae0910492fa02d0e2ff40a11f7",
-    "host": "sentry.bbp/3"
-  },
-  "gunicorn": {
-    "hostname": "0.0.0.0",
-    "port": 9191,
-    "workers": 8,
-    "worker_class": "tornado",
-    "worker_connections": 2000,
-    "timeout": 120,
-    "keepalive": 2
+    "public": "8ed0edc25cfa41bdbc4175899024f104",
+    "private": "50df2b1b8eb8430db23e9a904f4a58f4",
+    "host": "sentry.bbp/13"
   },
   "JasperServer": {
     "hostname": "localhost",
     "port": "8080",
     "username": "jasperadmin",
     "password": "jasperadmin"
+  },
+  "loggingconfig": {
+    "disable_existing_loggers": true,
+    "formatters": {
+      "simple": {
+        "datefmt": "%y %b %d, %H:%M:%S",
+        "format": "[%(asctime)s][%(levelname)s] %(name)s %(filename)s:%(funcName)s:%(lineno)d | %(message)s"
+      }
+    },
+    "handlers": {
+      "console": {
+        "class": "logging.StreamHandler",
+        "formatter": "simple",
+        "level": "DEBUG",
+        "stream": "ext://sys.stdout"
+      },
+      "sentry": {
+        "class": "raven.handlers.logging.SentryHandler",
+        "dsn": "http://8ed0edc25cfa41bdbc4175899024f104:50df2b1b8eb8430db23e9a904f4a58f4@sentry.bbp/13",
+        "level": "DEBUG"
+      }
+    },
+    "loggers": {
+      "": {
+        "handlers": [
+          "console",
+          "sentry"
+        ],
+        "level": "DEBUG",
+        "propagate": false
+      },
+      "Print_System": {
+        "level": "DEBUG",
+        "propagate": true
+      }
+    },
+    "version": 1
   },
   "XML_URL": "http://127.0.0.1:91/get_jrxml",
   "obs": "obs.bbp",
