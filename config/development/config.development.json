@@ -28,7 +28,7 @@
       "sentry": {
         "class": "raven.handlers.logging.SentryHandler",
         "dsn": "http://8ed0edc25cfa41bdbc4175899024f104:50df2b1b8eb8430db23e9a904f4a58f4@sentry.bbp/13",
-        "level": "DEBUG"
+        "level": "WARN"
       }
     },
     "loggers": {
@@ -41,7 +41,7 @@
         "propagate": false
       },
       "Print_System": {
-        "level": "DEBUG",
+        "level": "INFO",
         "propagate": true
       }
     },

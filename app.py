@@ -4,8 +4,6 @@
 try:
     import json
 
-    import logging
-
     from lxml import etree
 
     import requests
@@ -100,7 +98,7 @@ def print_xml():
 
         try:
             r = requests.post(url, auth=auth, params=payload)
-            logging.debug("Service response: %s" % r.text)
+            app.logger.debug("Service response: %s" % r.text)
             headers = r.json()
             doc_name = headers[0]['name']
         except requests.exceptions.HTTPError as detail:
@@ -131,7 +129,7 @@ def print_xml():
         if callback is not None:
             payload['callback'] = callback
 
-        logging.debug(payload)
+        app.logger.debug(payload)
 
         try:
             r = requests.post(url, auth=auth, params=payload)
@@ -151,11 +149,11 @@ def print_xml():
 
     def get_pdf(serviceName, config, guid, **kwargs):
 
-        logging.debug("serviceName: %s" % serviceName)
-        logging.debug("config: %s" % config)
-        logging.debug("guid: %s" % guid)
-        logging.debug("XML_URL: %s" % config['XML_URL'])
-        logging.debug("kwargs: %s" % kwargs)
+        app.logger.debug("serviceName: %s" % serviceName)
+        app.logger.debug("config: %s" % config)
+        app.logger.debug("guid: %s" % guid)
+        app.logger.debug("XML_URL: %s" % config['XML_URL'])
+        app.logger.debug("kwargs: %s" % kwargs)
 
         if serviceName == 'jasper':
             payload = dict(_flowId="viewReportFlow",
@@ -170,7 +168,7 @@ def print_xml():
             password = JasperServer['password']
             auth = requests.auth.HTTPBasicAuth(user, password)
 
-            logging.debug(payload)
+            app.logger.debug(payload)
 
             try:
                 r = requests.get(url=JasperUrl, auth=auth, params=payload)
@@ -195,7 +193,7 @@ def print_xml():
                 xml.xpath('//print_data')[0], encoding='utf-8',
                 pretty_print=True)
 
-            logging.debug(kwargs)
+            app.logger.debug(kwargs)
 
             result = generator.app(print_data, **kwargs)
 
@@ -266,7 +264,7 @@ def print_xml():
 
                 fs = Storage(db=database)
 
-                logging.debug("FS object: %s" % fs)
+                app.logger.debug("FS object: %s" % fs)
 
                 res = fs.put(pdf, content_type, json.dumps(metadata))
 
@@ -326,10 +324,10 @@ def test():
         config = {}
 
         for child in control_data:
-            logging.debug(child)
+            app.logger.debug(child)
             config[child.tag] = child.text
 
-        logging.debug(config)
+        app.logger.debug(config)
 
         guid = xml.xpath('//control_data/XML_GET_PARAM_guid/text()')[0]
         if (PS.save_xml(guid, fileObject)):

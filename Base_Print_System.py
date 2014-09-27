@@ -31,7 +31,7 @@ class Base_Print_System(object):
 
         except (etree.XMLSyntaxError, ValueError) as detail:
             message = "Not valid XML: %s" % detail
-            logging.error(message)
+            logger.error(message)
             raise Exception(message)
 
     def save_pdf(self, uuid, data):
@@ -63,12 +63,12 @@ class Base_Print_System(object):
 class Storage(object):
 
     def __init__(self, guid):
-        logging.debug("Initializating Storage")
+        logger.debug("Initializating Storage")
         self.guid = guid
         if guid:
-            logging.debug("Setup path for object: {}".format(guid))
+            logger.debug("Setup path for object: {}".format(guid))
             self.digest = md5(guid).hexdigest()
-            logging.debug("Digest: {}".format(self.digest))
+            logger.debug("Digest: {}".format(self.digest))
             self.path = os.path.join(
                 '/tmp', 'amq', self.digest[-1], self.digest[-2:])
             for i in ('xml', 'pdf'):
@@ -77,7 +77,7 @@ class Storage(object):
                 except OSError:
                     pass
         else:
-            logging.error("No guid")
+            logger.error("No guid")
 
     def put(self, data, filetype="xml"):
         with open(os.path.join(self.path, filetype, self.digest), 'w') as file:
@@ -105,9 +105,9 @@ class Print(object):
 
     def __init__(self, config=None):
         if config:
-            logging.debug(config)
+            logger.debug(config)
             required = ('printer', 'filename', 'pathName', 'count_copy')
-            logging.debug(required)
+            logger.debug(required)
             if all(k in config for k in required):
                 self.config = config
             else:
