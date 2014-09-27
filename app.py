@@ -103,16 +103,17 @@ def print_xml():
             doc_name = headers[0]['name']
         except requests.exceptions.HTTPError as detail:
             raise Exception(
-                "Не могу получить свойства родительского документа: %s" %
+                u"Не могу получить свойства родительского документа: %s" %
                 detail)
         except requests.exceptions.Timeout as detail:
-            raise Exception("""Таймаут при отправке запроса на получение
+            raise Exception(u"""Таймаут при отправке запроса на получение
                             свойств родительского документа: %s""" % detail)
         except requests.exceptions.ConnectionError as detail:
-            raise Exception("Ошибка при подключении к ресурсу: %s" %
+            raise Exception(u"Ошибка при подключении к ресурсу: %s" %
                             detail)
         except (ValueError, IndexError) as detail:
-            raise Exception("Сервис вместо ответа вернул bullshit")
+            raise Exception(
+                u"Сервис вместо ответа вернул bullshit: :'%s'" % detail)
 
         payload = dict(file_name=doc_name,
                        file_hash=filename,
@@ -136,16 +137,17 @@ def print_xml():
             return r.json()
         except requests.exceptions.HTTPError as detail:
             raise Exception(
-                "Не могу создать внешний документ: %s" %
+                u"Не могу создать внешний документ: %s" %
                 detail)
         except requests.exceptions.Timeout as detail:
-            raise Exception("""Таймаут при отправке запроса на создание
+            raise Exception(u"""Таймаут при отправке запроса на создание
                             внешнего документа: %s""" % detail)
         except requests.exceptions.ConnectionError as detail:
-            raise Exception("Ошибка при подключении к ресурсу: %s" %
+            raise Exception(u"Ошибка при подключении к ресурсу: %s" %
                             detail)
         except ValueError as detail:
-            raise Exception("Сервис вместо ответа вернул bullshit")
+            raise Exception(
+                u"Сервис вместо ответа вернул bullshit: %s" % detail)
 
     def get_pdf(serviceName, config, guid, **kwargs):
 
@@ -174,13 +176,13 @@ def print_xml():
                 r = requests.get(url=JasperUrl, auth=auth, params=payload)
                 return r.content
             except requests.exceptions.HTTPError as detail:
-                raise Exception("""Не могу получить сгенерированную печатную
+                raise Exception(u"""Не могу получить сгенерированную печатную
                                 форму: %s""" % detail)
             except requests.exceptions.Timeout as detail:
-                raise Exception("""Таймаут при отправке запроса в сервис
+                raise Exception(u"""Таймаут при отправке запроса в сервис
                                 генерации печатной формы: %s""" % detail)
             except requests.exceptions.ConnectionError as detail:
-                raise Exception("Ошибка при подключении к ресурсу: %s" %
+                raise Exception(u"Ошибка при подключении к ресурсу: %s" %
                                 detail)
 
         else:
@@ -216,10 +218,10 @@ def print_xml():
         count_elements = etree.XPath("count(//*[local-name() = $name])")
 
         if (count_elements(xml, name="print_data") != 1.0):
-            raise Exception("No print_data")
+            raise Exception(u"No print_data")
 
         if (count_elements(xml, name="control_data") != 1.0):
-            raise Exception("No control_data")
+            raise Exception(u"No control_data")
         else:
             control_data = xml.xpath('//control_data')[0]
 
@@ -231,7 +233,7 @@ def print_xml():
         if (count_elements(xml, name="serviceName") == 1.0):
             serviceName = xml.xpath("//serviceName/text()")[0]
         else:
-            raise Exception("Unknown serviceName")
+            raise Exception(u"Unknown serviceName")
 
         if(count_elements(xml, name="storage_file_hash") == 1.0):
             kwargs['storage_file_hash'] = xml.xpath(
@@ -276,12 +278,12 @@ def print_xml():
                 else:
                     return jsonify(results=False)
             else:
-                raise Exception("""Не могу сохранить сгенерированную
+                raise Exception(u"""Не могу сохранить сгенерированную
                                 печатную форму""")
         else:
-            raise Exception("Не удалось сохранить XML")
+            raise Exception(u"Не удалось сохранить XML")
     else:
-        raise Exception("No data in xml param")
+        raise Exception(u"No data in xml param")
 
 
 @app.route('/get_preview', methods=['GET'])
@@ -293,7 +295,7 @@ def get_preview():
         return Response(pdf, direct_passthrough=True,
                         mimetype='application/pdf')
     else:
-        raise Exception("No guid param")
+        raise Exception(u"No guid param")
 
 
 @app.route('/get_jrxml', methods=['GET'])
@@ -301,7 +303,7 @@ def get_preview():
 def get_jrxml():
     guid = request.args.get('guid')
     if guid is None:
-        raise Exception("No guid in request")
+        raise Exception(u"No guid in request")
 
     xml = PS.get_xml(guid)
 
