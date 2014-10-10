@@ -147,7 +147,7 @@ def print_xml():
                             detail)
         except ValueError as detail:
             raise Exception(
-                u"Сервис вместо ответа вернул bullshit: %s" % detail)
+                u"Сервис вместо ответа вернул bullshit: %s - %s" % (detail, r.content))
 
     def get_pdf(serviceName, config, guid, **kwargs):
 
