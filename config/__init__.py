@@ -17,8 +17,8 @@ try:
         config = json.load(f)
         config["APPLICATION_ENV"] = current_env
         dictConfig(config["loggingconfig"])
-
-except IOError as e:
-    raise Exception(e)
 except ValueError as e:
     raise Exception(e)
+except IOError:
+    print("Конфиг не найден")
+    exit(1)
